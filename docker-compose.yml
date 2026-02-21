@@ -1,0 +1,27 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: bookshop-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-1111}
+      MYSQL_DATABASE: bookshop
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  app:
+    build: .
+    container_name: bookshop-app
+    depends_on:
+      - db
+    environment:
+      DB_URL: jdbc:mysql://db:3306/bookshop?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-1111}
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:
